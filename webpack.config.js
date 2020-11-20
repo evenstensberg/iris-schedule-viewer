@@ -1,7 +1,9 @@
 const path = require('path');
-let HtmlWebpackPlugin = require('html-webpack-plugin');
-let ExtractTextPlugin = require('extract-text-webpack-plugin');
-let LicenseWebpackPlugin = require('license-webpack-plugin').LicenseWebpackPlugin;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const { LicenseWebpackPlugin } = require('license-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
+const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = {
 
@@ -21,10 +23,7 @@ module.exports = {
         test: /\.js$/,
         include: [ path.resolve(__dirname, "src") ],
         use: [{
-          loader: 'babel-loader' ,
-          query: {
-            presets: ['env']            
-          }
+          loader: 'babel-loader',
         }],
 
       },
@@ -51,6 +50,57 @@ module.exports = {
     new HtmlWebpackPlugin({ template: "index.html", inject: "head" }),
     new ExtractTextPlugin(`style${ process.env.NODE_ENV=='production' ? '.min' : '' }.css`),
     new LicenseWebpackPlugin({ pattern: /.*/, unacceptablePattern: /GPL/, abortOnUnacceptableLicense: true, includePackagesWithoutLicense: true })
-  ]
+  ],
+
+  optimization: {
+    runtimeChunk: false,
+    splitChunks: {
+      cacheGroups: {
+        default: false,
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendor_app",
+          chunks: "all",
+          minChunks: 2
+        }
+      }
+    },
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          output: {
+            comments: false
+          },
+          compress: {
+            passes: 3,
+            pure_getters: true,
+            unsafe: true
+          },
+          ecma: undefined,
+          warnings: false,
+          parse: {
+            html5_comments: false
+          },
+          mangle: true,
+          module: false,
+          toplevel: false,
+          nameCache: null,
+          ie8: false,
+          keep_classnames: false,
+          keep_fnames: false,
+          safari10: false,
+          unsafe_Function: true
+        }
+      }),
+      new OptimizeCssAssetsPlugin({
+        assetNameRegExp: /\.optimize\.css$/g,
+        cssProcessor: require("cssnano"),
+        cssProcessorPluginOptions: {
+          preset: ["default", { discardComments: { removeAll: true } }]
+        },
+        canPrint: true
+      })
+    ]
+  },
 
 }

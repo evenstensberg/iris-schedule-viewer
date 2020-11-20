@@ -23,6 +23,7 @@
     "babel-preset-env": "^1.7.0",
     "chai": "^3.5.0",
     "css-loader": "^0.27.2",
+    "cssnano": "^4.1.10",
     "d3-axis": "^1.0.6",
     "d3-brush": "^1.0.4",
     "d3-scale": "^1.0.5",
@@ -36,8 +37,10 @@
     "lodash": "^4.17.11",
     "mocha": "^5.2.0",
     "moment": "^2.24.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.4",
     "sinon": "^1.17.7",
     "style-loader": "^0.13.2",
+    "terser-webpack-plugin": "^4.2.3",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.1.14"
